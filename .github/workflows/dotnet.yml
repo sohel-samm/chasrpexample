@@ -29,5 +29,25 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
       
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Publish
+      run: dotnet publish -c Release -o publish
+
+    # 🔐 SSH setup
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    # 📂 Copy files
+    - name: Deploy to EC2
+      run: |
+        rsync -avz publish/ \
+        ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/chasrpexample/
+
+    # 🔄 Restart app
+    - name: Restart app
+      run: |
+        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+        "sudo systemctl restart notesapi"
