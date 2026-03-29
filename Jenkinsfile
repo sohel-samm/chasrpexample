@@ -1,6 +1,10 @@
 pipeline {
-    agent any
-
+    // agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/dotnet/sdk:8.0'
+        }
+    }
     // environment {
     //     EC2_USER = credentials('EC2_USER')
     //     EC2_HOST = credentials('EC2_HOST')
