@@ -1,11 +1,11 @@
 pipeline {
     agent any
 
-    environment {
-        EC2_USER = credentials('EC2_USER')
-        EC2_HOST = credentials('EC2_HOST')
-        EC2_SSH_KEY = credentials('EC2_SSH_KEY')
-    }
+    // environment {
+    //     EC2_USER = credentials('EC2_USER')
+    //     EC2_HOST = credentials('EC2_HOST')
+    //     EC2_SSH_KEY = credentials('EC2_SSH_KEY')
+    // }
 
     stages {
 
@@ -33,19 +33,19 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
-                sh '''
-                mkdir -p ~/.ssh
-                echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa
-                ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+        // stage('Deploy to EC2') {
+        //     steps {
+        //         sh '''
+        //         mkdir -p ~/.ssh
+        //         echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+        //         chmod 600 ~/.ssh/id_rsa
+        //         ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
-                rsync -avz publish/ $EC2_USER@$EC2_HOST:/home/ec2-user/chasrpexample/
+        //         rsync -avz publish/ $EC2_USER@$EC2_HOST:/home/ec2-user/chasrpexample/
 
-                ssh $EC2_USER@$EC2_HOST "sudo systemctl restart notesapi"
-                '''
-            }
-        }
+        //         ssh $EC2_USER@$EC2_HOST "sudo systemctl restart notesapi"
+        //         '''
+        //     }
+        // }
     }
 } 
